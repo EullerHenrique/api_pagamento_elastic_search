@@ -1,0 +1,36 @@
+## https://stackoverflow.com/questions/51541323/recommended-ram-ratios-for-elk-with-docker-compose
+## https://stackoverflow.com/questions/42345235/how-to-specify-memory-cpu-limit-in-docker-compose-version-3
+version: '3.7'
+services:
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4-amd64
+    ports:
+      - "9200:9200"
+    environment:
+      cluster.name: "elasticsearch"
+      node.name: "node1"
+      xpack.security.enabled: "false"
+      discovery.type: "single-node"
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.17.4-amd64
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    depends_on:
+      - elasticsearch
+
